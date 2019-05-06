@@ -193,8 +193,8 @@ namespace HawkNet.Owin
 
             var payload = Encoding.UTF8.GetString(((StreamWrapper)response.Body).ToArray());
 
-            var hash = Hawk.CalculatePayloadHash(payload, response.ContentType, credential);
-
+            var hash = Hawk.CalculatePayloadHash(payload, mediaType, credential);
+            
             var mac = Hawk.CalculateMac(host,
                 method,
                 uri,
