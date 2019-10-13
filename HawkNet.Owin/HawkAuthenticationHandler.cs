@@ -186,8 +186,19 @@ namespace HawkNet.Owin
             IOwinResponse response)
         {
             var attributes = Hawk.ParseAttributes(authorization);
+            HawkCredential credential = null;
 
-            var credential = await credentials(attributes["id"]);
+            try
+            {
+                credential = await credentials(attributes["id"]);
+            }
+            catch (SecurityException ex) // we can't sign the response if there was a security exception
+            {
+                this.logger.WriteWarning(ex.Message);
+                return;
+            }
+
+            if (credential == null) return; // we can't sign the response if there are no credentials
 
             response.Body.Seek(0, SeekOrigin.Begin);
 
